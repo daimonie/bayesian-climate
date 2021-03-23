@@ -7,7 +7,7 @@ vname = 'Tx_1211'
 station = 0
 
 nc = netCDF4.Dataset(url)
-print(nc.dimensions['time'].long_name)
+print(nc.dimensions['time'].name)
 print(nc.variables['temperature'].long_name)
 # h = nc.variables[vname]
 # times = nc.variables['time']
