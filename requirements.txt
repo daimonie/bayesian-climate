@@ -1,0 +1,7 @@
+pymc3
+numpy
+scipy
+seaborne
+pycodestyle
+pytest
+mock
