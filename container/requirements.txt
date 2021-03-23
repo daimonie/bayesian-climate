@@ -1,7 +1,8 @@
 pymc3
 numpy
 scipy
-seaborne
+seaborn
 pycodestyle
 pytest
 mock
+netCDF4
