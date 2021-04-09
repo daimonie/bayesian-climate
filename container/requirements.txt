@@ -6,3 +6,4 @@ pycodestyle
 pytest
 mock
 netCDF4
+pycm3
