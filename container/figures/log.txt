@@ -1,0 +1,399 @@
+docker run -v /home/daimonie/Repositories/bayesian-climate/container/:/opt/container \
+--rm -ti --entrypoint=bash bayesian-climate:latest
+root@bd8ce795305c:/opt/container# python app.py >> log.txt
+WARNING (theano.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+[bayes] 2021-06-10 19:38:54,460 - Logging has been setup.
+[bayes] 2021-06-10 19:38:54,463 -      jaar  jan  feb  mrt   apr   mei   jun   jul   aug   sep   okt  nov  dec
+0  2021.0  3.4  4.3  6.4   6.7   NaN   NaN   NaN   NaN   NaN   NaN  NaN  NaN
+1  2020.0  6.2  7.2  6.8  11.1  13.1  17.5  17.0  20.4  15.2  11.3  8.9  5.5
+2  2019.0  3.5  6.1  8.0  10.9  11.7  18.1  18.8  18.4  14.5  11.6  6.4  5.8
+3  2018.0  5.6  0.7  4.7  12.2  16.4  17.9  20.7  18.5  14.7  11.9  6.8  6.1
+4  2017.0  1.6  5.1  8.6   8.6  15.0  18.0  17.9  17.2  13.7  13.3  7.3  4.9
+[bayes] 2021-06-10 19:38:54,529 -     year month  temp       date
+0   1901   jan  -0.3 1901-01-01
+1   1901   feb  -0.9 1901-02-01
+2   1901   mrt   3.5 1901-03-01
+3   1901   apr   9.1 1901-04-01
+4   1901   mei  12.2 1901-05-01
+5   1901   jun  14.7 1901-06-01
+6   1901   jul  18.7 1901-07-01
+7   1901   aug  16.7 1901-08-01
+8   1901   sep  14.7 1901-09-01
+9   1901   okt  10.3 1901-10-01
+10  1901   nov   5.3 1901-11-01
+11  1901   dec   2.9 1901-12-01
+[bayes] 2021-06-10 19:38:54,536 - Starting figure, high res/pixels
+[bayes] 2021-06-10 19:38:55,020 - Saved figure to figures/timeseries_simple.png.
+[bayes] 2021-06-10 19:38:55,021 - Starting figure, high res/pixels
+[bayes] 2021-06-10 19:38:55,657 - Saved figure to figures/timeseries_month.png.
+[bayes] 2021-06-10 19:38:55,660 -    year      temp
+0  1901  8.908333
+1  1902  8.300000
+2  1903  9.266667
+3  1904  9.058333
+4  1905  8.816667
+[bayes] 2021-06-10 19:38:55,664 - Starting figure, high res/pixels
+[bayes] 2021-06-10 19:38:56,074 - Saved figure to figures/timeseries_year.png.
+[bayes] 2021-06-10 19:38:56,074 -
+
+Initial exploration done. Let's pymc3 this.
+
+The idea is that we want to see whether or not the parameters
+change with time.
+
+so, we will fit:
+* sigma(t) = sigma_0 THIS IS NOT bayesian, but a const
+* mu(t) = mu_0 + (year - min_year) * mu_delta / year_diff
+
+where t is at a resolution of years
+
+For simplicity, we assume that sigma does not change
+with time. The initial parameters are:
+- sigma = std(X))
+- mu_0 = mean(X)
+- mu_delta = 0
+
+We assume each of these to be normally distributed around their initial values,
+choosing the variance of each to be large (10 values).
+
+If you're wondering why sigma isn't a bayesian parameter,
+it's because I couldn't get it to work last night.
+
+[bayes] 2021-06-10 19:38:56,074 - Generating testing data, period 120 years
+[bayes] 2021-06-10 19:38:56,082 - Testing data stats: min=-12.266, mean= 5.323, max= 24.028, std= 5.800
+[bayes] 2021-06-10 19:38:56,082 - Real data stats: min=-6.700, mean= 9.559, max= 22.300, std= 5.636
+[bayes] 2021-06-10 19:38:56,082 - Starting with:
+mu =  4.317 +  5.242 * t
+sigma =  5.650
+
+[bayes] 2021-06-10 19:38:56,084 - Starting figure, high res/pixels
+[bayes] 2021-06-10 19:38:56,571 - Saved figure to figures/test_data.png.
+[bayes] 2021-06-10 19:38:56,576 - Lock 140126426650800 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:56,981 - Lock 140126426650800 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:56,983 - Lock 140126426651280 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:57,111 - Lock 140126426651280 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:57,114 - Lock 140126426900320 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:57,506 - Lock 140126426900320 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:57,509 - Lock 140126426330880 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:57,918 - Lock 140126426330880 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:57,920 - Lock 140126426389568 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:58,331 - Lock 140126426389568 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:58,333 - Lock 140126426766688 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:58,746 - Lock 140126426766688 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:58,749 - Lock 140126426365856 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:59,159 - Lock 140126426365856 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:59,162 - Lock 140126426362352 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:59,580 - Lock 140126426362352 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:59,582 - Lock 140126426389568 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:59,976 - Lock 140126426389568 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:38:59,979 - Lock 140126426502336 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:00,384 - Lock 140126426502336 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:00,388 - Lock 140126426329584 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:00,828 - Lock 140126426329584 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:00,831 - Lock 140126426505376 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:01,252 - Lock 140126426505376 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:01,254 - Lock 140126426061696 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:01,718 - Lock 140126426061696 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:01,721 - Lock 140126426363936 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:02,171 - Lock 140126426363936 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:02,184 - Lock 140126427053408 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:02,596 - Lock 140126427053408 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:02,597 - Lock 140126426082896 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:03,011 - Lock 140126426082896 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:03,023 - Lock 140126425712816 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:03,364 - Lock 140126425712816 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:03,369 - Lock 140126425606080 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:03,370 - Lock 140126425606080 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:03,402 - Lock 140126426081600 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:03,831 - Lock 140126426081600 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:03,834 - Lock 140126425076352 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:04,290 - Lock 140126425076352 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:04,295 - Lock 140126425459728 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:04,295 - Lock 140126425459728 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:04,297 - Lock 140126425213248 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:04,760 - Lock 140126425213248 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:04,764 - Lock 140126424757872 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:05,223 - Lock 140126424757872 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:05,227 - Lock 140126425223952 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:05,227 - Lock 140126425223952 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:05,229 - Lock 140126424834688 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:05,230 - Lock 140126424834688 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:05,232 - Lock 140126424818544 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:05,692 - Lock 140126424818544 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:05,697 - Lock 140126424756576 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:05,697 - Lock 140126424756576 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:05,699 - Lock 140126424818256 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:06,132 - Lock 140126424818256 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:06,136 - Lock 140126424909856 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:06,574 - Lock 140126424909856 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:06,577 - Lock 140126425478576 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:06,577 - Lock 140126425478576 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:06,582 - Lock 140126424911776 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,023 - Lock 140126424911776 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,027 - Lock 140126424948208 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,028 - Lock 140126424948208 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,029 - Lock 140126424913472 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,457 - Lock 140126424913472 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,460 - Lock 140126424844944 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,461 - Lock 140126424844944 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,466 - Lock 140126424479248 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,467 - Lock 140126424479248 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,471 - Lock 140126424979968 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,472 - Lock 140126424979968 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,474 - Lock 140126424845280 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,922 - Lock 140126424845280 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:07,992 - Lock 140126426501568 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:08,391 - Lock 140126426501568 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:08,412 - Lock 140126424942240 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:08,775 - Lock 140126424942240 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:08,777 - Lock 140126424946480 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:08,778 - Lock 140126424946480 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:08,813 - Lock 140126423488592 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:09,285 - Lock 140126423488592 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:09,287 - Lock 140126423660192 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:09,287 - Compiling new CVM
+[bayes] 2021-06-10 19:39:09,466 - New version 0.211
+[bayes] 2021-06-10 19:39:09,466 - Lock 140126423660192 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:09,499 - Lock 140126422915632 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:09,501 - Lock 140126422915632 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:09,529 - Lock 140126423218832 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:09,530 - Lock 140126423218832 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:09,532 - Lock 140126423641584 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:09,929 - Lock 140126423641584 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:09,933 - Lock 140126423400512 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,363 - Lock 140126423400512 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,367 - Lock 140126423350432 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,368 - Lock 140126423350432 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,372 - Lock 140126423174256 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,373 - Lock 140126423174256 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,377 - Lock 140126423243504 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,378 - Lock 140126423243504 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,381 - Lock 140126423219648 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,821 - Lock 140126423219648 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,824 - Lock 140126423618464 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,825 - Lock 140126423618464 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,828 - Lock 140126423662112 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,829 - Lock 140126423662112 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,833 - Lock 140126423264320 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,834 - Lock 140126423264320 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:10,836 - Lock 140126423463824 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:11,292 - Lock 140126423463824 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:11,295 - Lock 140126425664576 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:11,719 - Lock 140126425664576 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:11,728 - Lock 140126425684288 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:11,729 - Lock 140126425684288 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:11,743 - Lock 140126424870528 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:11,744 - Lock 140126424870528 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:11,758 - Lock 140126422795456 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:12,294 - Lock 140126422795456 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:12,296 - Lock 140126422838144 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:12,700 - Lock 140126422838144 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:12,708 - Lock 140126422845616 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:13,099 - Lock 140126422845616 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:13,219 - Lock 140126421021696 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:13,627 - Lock 140126421021696 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:13,631 - Lock 140126421038944 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,070 - Lock 140126421038944 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,072 - Lock 140126421049744 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,072 - Lock 140126421049744 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,074 - Lock 140126421038128 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,421 - Lock 140126421038128 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,423 - Lock 140126421266880 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,424 - Lock 140126421266880 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,426 - Lock 140126420742640 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,427 - Lock 140126420742640 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,432 - Lock 140126420744656 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,433 - Lock 140126420744656 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,435 - Lock 140126421051712 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,436 - Lock 140126421051712 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,443 - Lock 140126421293088 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,445 - Lock 140126421293088 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,447 - Lock 140126420733856 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,857 - Lock 140126420733856 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:14,859 - Lock 140126421052384 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:15,254 - Lock 140126421052384 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:15,259 - Lock 140126420371920 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:15,260 - Lock 140126420371920 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:15,264 - Lock 140126420371776 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:15,265 - Lock 140126420371776 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:15,269 - Lock 140126421051040 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:15,701 - Lock 140126421051040 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:15,708 - Lock 140126420369808 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:15,709 - Lock 140126420369808 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:15,711 - Lock 140126421549504 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:16,108 - Lock 140126421549504 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:16,111 - Lock 140126421552864 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:16,111 - Lock 140126421552864 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:16,121 - Lock 140126421486704 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:16,533 - Lock 140126421486704 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:16,537 - Lock 140126421521456 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:16,538 - Lock 140126421521456 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:16,540 - Lock 140126421440400 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:16,951 - Lock 140126421440400 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:16,954 - Lock 140126421466224 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:16,954 - Lock 140126421466224 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:16,959 - Lock 140126421650064 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:17,373 - Lock 140126421650064 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:17,381 - Lock 140126419806720 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:17,805 - Lock 140126419806720 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:17,819 - Lock 140126419893888 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:18,262 - Lock 140126419893888 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:18,264 - Lock 140126419948784 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:18,687 - Lock 140126419948784 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:18,692 - Lock 140126419948448 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:18,693 - Lock 140126419948448 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:18,698 - Lock 140126419985024 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:19,145 - Lock 140126419985024 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:19,148 - Lock 140126419805472 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:19,148 - Lock 140126419805472 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:19,151 - Lock 140126419933024 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:19,152 - Lock 140126419933024 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:19,155 - Lock 140126419998896 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:19,155 - Lock 140126419998896 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:19,161 - Lock 140126419899920 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:19,604 - Lock 140126419899920 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:19,606 - Lock 140126420256224 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:20,017 - Lock 140126420256224 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:20,020 - Lock 140126419950656 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:20,432 - Lock 140126419950656 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:20,443 - Lock 140126421040816 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:20,880 - Lock 140126421040816 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:20,887 - Lock 140126421049936 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:21,336 - Lock 140126421049936 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:21,340 - Lock 140126421812800 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:21,342 - Lock 140126421812800 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:21,343 - Lock 140126419997648 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:21,789 - Lock 140126419997648 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:21,795 - Lock 140126419535856 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:22,233 - Lock 140126419535856 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:22,238 - Lock 140126419580336 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:22,650 - Lock 140126419580336 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:22,655 - Lock 140126419613488 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:23,111 - Lock 140126419613488 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:23,124 - Lock 140126419595472 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:23,526 - Lock 140126419595472 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:23,534 - Lock 140126418971376 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:23,968 - Lock 140126418971376 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:23,974 - Lock 140126419035712 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:24,378 - Lock 140126419035712 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:24,383 - Lock 140126419034176 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:24,385 - Lock 140126419034176 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:24,388 - Lock 140126418970704 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:24,748 - Lock 140126418970704 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:24,750 - Lock 140126419674496 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:25,078 - Lock 140126419674496 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:25,185 - Lock 140126418386176 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:25,527 - Lock 140126418386176 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:25,616 - Lock 140126418020336 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:25,617 - Lock 140126418020336 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:25,662 - Lock 140126417867968 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:25,664 - Lock 140126417867968 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:25,676 - Lock 140126417719984 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,052 - Lock 140126417719984 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,054 - Lock 140126417744368 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,055 - Lock 140126417744368 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,058 - Lock 140126417520096 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,059 - Lock 140126417520096 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,060 - Lock 140126417598208 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,061 - Lock 140126417598208 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,087 - Lock 140126418283008 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,088 - Lock 140126418283008 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,092 - Lock 140126417222192 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,093 - Lock 140126417222192 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,115 - Lock 140126417427664 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,625 - Lock 140126417427664 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:26,628 - Lock 140126417720128 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:27,086 - Lock 140126417720128 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:27,091 - Lock 140126417111360 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:27,604 - Lock 140126417111360 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:27,607 - Lock 140126416996000 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:27,608 - Lock 140126416996000 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:27,619 - Lock 140126416676560 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:27,961 - Lock 140126416676560 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:27,969 - Lock 140126417630064 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:28,323 - Lock 140126417630064 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:28,326 - Lock 140126417331152 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:28,685 - Lock 140126417331152 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:28,688 - Lock 140126416678096 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:28,688 - Lock 140126416678096 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:28,800 - Lock 140126418283536 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:28,801 - Lock 140126418283536 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:28,802 - Lock 140126415813168 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:28,803 - Lock 140126415813168 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:28,808 - Lock 140126415869648 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:28,810 - Lock 140126415869648 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:28,812 - Lock 140126415871136 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:29,180 - Lock 140126415871136 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:29,242 - Lock 140126415647264 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:29,243 - Lock 140126415647264 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:29,246 - Lock 140126417195360 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:29,694 - Lock 140126417195360 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:29,867 - Lock 140126418271296 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:30,264 - Lock 140126418271296 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:30,513 - Lock 140126421720896 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:30,859 - Lock 140126421720896 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:30,862 - Lock 140126422847152 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:30,862 - Lock 140126422847152 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:30,864 - Lock 140126422883200 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:31,329 - Lock 140126422883200 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:31,332 - Lock 140126425076544 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:31,736 - Lock 140126425076544 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:31,737 - Lock 140126423618704 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:32,092 - Lock 140126423618704 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:32,105 - Lock 140126422698016 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:32,469 - Lock 140126422698016 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:32,472 - Lock 140126421631232 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:32,472 - Lock 140126421631232 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+/opt/container/bayesian_climate/model.py:30: FutureWarning: In v4.0, pm.sample will return an `arviz.InferenceData` object instead of a `MultiTrace` by default. You can pass return_inferencedata=True or return_inferencedata=False to be safe and silence this warning.
+  trace = pm.sample(sample, step=step, start=start)
+Multiprocess sampling (4 chains in 4 jobs)
+[bayes] 2021-06-10 19:39:32,602 - Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [mu_delta, mu_0]
+[bayes] 2021-06-10 19:39:32,602 - NUTS: [mu_delta, mu_0]
+Sampling 4 chains for 1_000 tune and 10_000 draw iterations (4_000 + 40_000 draws total) took 10 seconds.
+[bayes] 2021-06-10 19:39:42,444 - Sampling 4 chains for 1_000 tune and 10_000 draw iterations (4_000 + 40_000 draws total) took 10 seconds.
+[bayes] 2021-06-10 19:39:42,573 - Lock 140126418116176 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:43,136 - Lock 140126418116176 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+The acceptance probability does not match the target. It is 0.8832724122826389, but should be close to 0.8. Try to increase the number of tuning steps.
+[bayes] 2021-06-10 19:39:45,199 - The acceptance probability does not match the target. It is 0.8832724122826389, but should be close to 0.8. Try to increase the number of tuning steps.
+The acceptance probability does not match the target. It is 0.8872197845549396, but should be close to 0.8. Try to increase the number of tuning steps.
+[bayes] 2021-06-10 19:39:45,199 - The acceptance probability does not match the target. It is 0.8872197845549396, but should be close to 0.8. Try to increase the number of tuning steps.
+The number of effective samples is smaller than 25% for some parameters.
+[bayes] 2021-06-10 19:39:45,199 - The number of effective samples is smaller than 25% for some parameters.
+[bayes] 2021-06-10 19:39:45,225 - Starting figure, high res/pixels
+/usr/local/lib/python3.8/site-packages/arviz/data/io_pymc3.py:96: FutureWarning: Using `from_pymc3` without the model will be deprecated in a future release. Not using the model will return less accurate and less useful results. Make sure you use the model argument or call from_pymc3 within a model context.
+  warnings.warn(
+[bayes] 2021-06-10 19:39:46,830 - Saved figure to figures/test_burned_trace.png.
+[bayes] 2021-06-10 19:39:46,912 - Lock 140126426116400 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:46,913 - Lock 140126426116400 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:46,967 - Lock 140126423206352 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:46,967 - Lock 140126423206352 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:46,968 - Lock 140126422684048 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:46,969 - Lock 140126422684048 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:47,096 - Lock 140126421119712 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:47,098 - Lock 140126421119712 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:47,618 - Lock 140126318089600 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:47,620 - Lock 140126318089600 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:47,626 - Lock 140126318097456 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:39:47,627 - Lock 140126318097456 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+/opt/container/bayesian_climate/model.py:30: FutureWarning: In v4.0, pm.sample will return an `arviz.InferenceData` object instead of a `MultiTrace` by default. You can pass return_inferencedata=True or return_inferencedata=False to be safe and silence this warning.
+  trace = pm.sample(sample, step=step, start=start)
+Multiprocess sampling (4 chains in 4 jobs)
+[bayes] 2021-06-10 19:39:48,277 - Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [mu_delta, mu_0]
+[bayes] 2021-06-10 19:39:48,277 - NUTS: [mu_delta, mu_0]
+Sampling 4 chains for 1_000 tune and 100_000 draw iterations (4_000 + 400_000 draws total) took 84 seconds.
+[bayes] 2021-06-10 19:41:12,589 - Sampling 4 chains for 1_000 tune and 100_000 draw iterations (4_000 + 400_000 draws total) took 84 seconds.
+[bayes] 2021-06-10 19:41:12,712 - Lock 140126421521936 acquired on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+[bayes] 2021-06-10 19:41:12,714 - Lock 140126421521936 released on /root/.theano/compiledir_Linux-5.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5--3.8.8-64/.lock
+The acceptance probability does not match the target. It is 0.8867405721997054, but should be close to 0.8. Try to increase the number of tuning steps.
+[bayes] 2021-06-10 19:41:34,627 - The acceptance probability does not match the target. It is 0.8867405721997054, but should be close to 0.8. Try to increase the number of tuning steps.
+The acceptance probability does not match the target. It is 0.8829398720532852, but should be close to 0.8. Try to increase the number of tuning steps.
+[bayes] 2021-06-10 19:41:34,627 - The acceptance probability does not match the target. It is 0.8829398720532852, but should be close to 0.8. Try to increase the number of tuning steps.
+The number of effective samples is smaller than 25% for some parameters.
+[bayes] 2021-06-10 19:41:34,627 - The number of effective samples is smaller than 25% for some parameters.
+[bayes] 2021-06-10 19:41:34,699 - Starting figure, high res/pixels
+/usr/local/lib/python3.8/site-packages/arviz/data/io_pymc3.py:96: FutureWarning: Using `from_pymc3` without the model will be deprecated in a future release. Not using the model will return less accurate and less useful results. Make sure you use the model argument or call from_pymc3 within a model context.
+  warnings.warn(
+[bayes] 2021-06-10 19:41:44,291 - Saved figure to figures/burned_trace.png.
+root@bd8ce795305c:/opt/container#
