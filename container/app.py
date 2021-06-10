@@ -7,7 +7,8 @@ import time
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from bayesian_climate.utils import toc
+import bayesian_climate.climate as climate_lib
+from bayesian_climate.utils import toc, plot_posterior
 from bayesian_climate.wrangling import (
 	read_data,
 	select_columns,
@@ -22,10 +23,12 @@ logger.setLevel("INFO")
 path='/opt/container/data/data.txt' 
 path_out='/opt/container/data/data_processed.csv' 
 path_simple_lmplot = '/opt/container/figures/00_simple_lmplot.png'
+path_gamma_posterior = '/opt/container/figures/01_gamma_posterior.png'
+path_err_posterior = '/opt/container/figures/02_err_posterior.png'
 
+start_time = time.time() 
+toc(start_time)
 if os.path.exists(path_out) is False:
-	start_time = time.time() 
-	toc(start_time)
 
 	logging.info(f"Reading file {path}.")
 	df_raw = (
@@ -54,10 +57,25 @@ else:
 
 	logging.info(f"Saving Figure to file {path_simple_lmplot}.")
 	sns_plot = sns.lmplot(
-	    data=df_processed,
-	    x='year',
-	    y='anomaly',
-	    height=7,
-	    aspect=2
+		data=df_processed,
+		x='year',
+		y='anomaly',
+		height=7,
+		aspect=2
 	)
 	sns_plot.savefig(path_simple_lmplot)
+
+	toc(start_time)
+	model = climate_lib.fit_bayesian_quadratic(
+		df_processed,
+		sample_size=1500
+	)
+	toc(start_time)
+ 
+	gamma_trace = model.get("gamma")
+	plot_posterior("gamma", gamma_trace, path_gamma_posterior)
+
+	err_trace = model.get("err")
+	plot_posterior("err", err_trace, path_err_posterior)
+
+	toc(start_time)
